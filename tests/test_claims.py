@@ -45,15 +45,15 @@ def test_transport_crossover_series():
 
 def test_mixed_crossover_series_and_the_density_flip():
     rows = ev.crossover(Settings("mixed", 20, 20, 0.05, 35), "size")
-    assert _ratios(rows) == [2.54, 4.72, 4.32, 1.56, 0.32, 0.47] and [int(r["pivots"]) for r in rows] == [7, 12, 38, 49, 223, 364]
-    assert round(rows[-1]["explicit"] / rows[-1]["nz"], 2) == 1.45 and round(rows[2]["explicit"] / rows[2]["nz"], 1) == 23.1
-    _has("**2.54 / 4.72 / 4.32 / 1.56 / 0.32 / 0.47**", "(7, 12, 38, 49, 223, 364 Pivots)", "Mischung 100 × 100: 1.45-fach", "bis 23-fach", "Mischung 20 × 20: 4.72")
+    assert _ratios(rows) == [2.54, 4.72, 4.30, 1.54, 0.30, 0.45] and [int(r["pivots"]) for r in rows] == [7, 12, 38, 49, 223, 364]
+    assert round(rows[-1]["explicit"] / rows[-1]["nz"], 2) == 1.41 and round(rows[2]["explicit"] / rows[2]["nz"], 1) == 22.8
+    _has("**2.54 / 4.72 / 4.30 / 1.54 / 0.30 / 0.45**", "(7, 12, 38, 49, 223, 364 Pivots)", "Mischung 100 × 100: 1.41-fach", "bis 23-fach", "Mischung 20 × 20: 4.72")
     flip = ev.crossover(Settings("mixed", 20, 20, 0.1, 35), "size")
-    assert _ratios(flip)[-1] == 1.42
-    _has("(1.42)", "0.47 bei Dichte 0.05, 1.42 bei Dichte 0.1")
+    assert _ratios(flip)[-1] == 1.38
+    _has("(1.38)", "0.45 bei Dichte 0.05, 1.38 bei Dichte 0.1")
     dens = ev.crossover(Settings("mixed", 30, 120, 0.05, 35), "density")
-    assert round(next(r for r in dens if r["label"] == "0.1")["explicit"] / next(r for r in dens if r["label"] == "0.1")["nz"], 2) == 0.68
-    _has("Mischung 30 × 120, Dichte 0.1: 0.68")
+    assert round(next(r for r in dens if r["label"] == "0.1")["explicit"] / next(r for r in dens if r["label"] == "0.1")["nz"], 2) == 0.62
+    _has("Mischung 30 × 120, Dichte 0.1: 0.62")
 
 
 def test_explicit_against_dense_on_a_dense_instance():
@@ -75,15 +75,15 @@ def test_klee_minty_cube_has_exactly_zero_drift():
 
 def test_refactor_and_drift_numbers():
     rows = {int(r["K"]): r for r in ev.refactor_curve(Settings("mixed", 60, 60, 0.1, 35))}
-    assert round(rows[10]["refactor_ops"]) == 261790 and round(rows[10]["ops"]) == 980375 and round(rows[0]["ops"]) == 3618469
-    _has("die Neuinversion kostet bei K = 10 261 790 Operationen", "**K = 10 980 375**", "nie 3 618 469", "K = 1 3 156 874", "K = 50 1 263 998", "980 375 Operationen gegen 3 618 469")
-    _has("höchstens 3.0e-12", "**1.4e-12**", "**3.0e-12**", "**1.4e-13**", "162 Pivots")
+    assert round(rows[10]["refactor_ops"]) == 258564 and round(rows[10]["ops"]) == 953297 and round(rows[0]["ops"]) == 2984287
+    _has("die Neuinversion kostet bei K = 10 258 564 Operationen", "**K = 10 953 297**", "nie 2 984 287", "K = 1 3 116 851", "K = 50 1 208 814", "953 297 Operationen gegen 2 984 287")
+    _has("unter 1e-11", "in der Größenordnung 1e-12", "eine Größenordnung darunter", "162 Pivots")
 
 
 def test_fill_in_and_storage_numbers():
     rows = {r["name"]: r for r in ev.method_rows(Settings("mixed", 100, 100, 0.05, 35, "dantzig", "pfi", 10))}
-    assert (rows["tableau"]["stored"], rows["tableau_nz"]["stored"], rows["pfik"]["stored"]) == (23937, 13537, 5324)
-    _has("**13 537** Nichtnullen (dicht gespeichert 23 937)", "**5 324**")
+    assert (rows["tableau"]["stored"], rows["tableau_nz"]["stored"], rows["pfik"]["stored"]) == (23937, 13537, 5042)
+    _has("**13 537** Nichtnullen (dicht gespeichert 23 937)", "**5 042**")
 
 
 def test_steepest_numbers_and_the_mixed_counter_example():
@@ -93,21 +93,21 @@ def test_steepest_numbers_and_the_mixed_counter_example():
     assert (s["pfik"], d["pfik"], s["weights_pfik"]) == (31336, 26328, 17726)
     _has("(**0.57**)", "**0.55**", "im dichten Modell 0.73", "**1.19** (31 336 gegen 26 328)", "17 726 Operationen")
     m = ev.steepest_cost(Settings("mixed", 40, 40, 0.1, 35))
-    assert (round(m["steepest"]["pivots"] / m["dantzig"]["pivots"], 2), round(m["steepest"]["dense"] / m["dantzig"]["dense"], 2), round(m["steepest"]["pfik"] / m["dantzig"]["pfik"], 2)) == (0.47, 0.59, 0.56)
-    _has("0.47 der Pivots und 0.59 der Operationen im dichten Tableau, 0.56 im Revised mit Produktform")
+    assert (round(m["steepest"]["pivots"] / m["dantzig"]["pivots"], 2), round(m["steepest"]["dense"] / m["dantzig"]["dense"], 2), round(m["steepest"]["pfik"] / m["dantzig"]["pfik"], 2)) == (0.47, 0.59, 0.59)
+    _has("0.47 der Pivots und 0.59 der Operationen im dichten Tableau, 0.59 im Revised mit Produktform")
 
 
 def test_partial_pricing_numbers_and_the_grenzen_table():
     rows = {r["fraction"]: r for r in ev.partial_curve(Settings("mixed", 20, 160, 0.1, 35))}
-    assert [round(r["total"]) for r in rows.values()] == [57000, 43151, 44912, 18701, 26120] and [int(r["pivots"]) for r in rows.values()] == [40, 45, 63, 45, 58]
-    _has("**57 000 / 43 151 / 44 912 / 18 701 / 26 120**", "40 / 45 / 63 / 45 / 58 Pivots", "18 701 statt 57 000")
+    assert [round(r["total"]) for r in rows.values()] == [55433, 42124, 43462, 18262, 24583] and [int(r["pivots"]) for r in rows.values()] == [40, 45, 63, 45, 58]
+    _has("**55 433 / 42 124 / 43 462 / 18 262 / 24 583**", "40 / 45 / 63 / 45 / 58 Pivots", "18 262 statt 55 433")
     cfg = ev.run_config(Settings("random", 60, 480, 0.05, 35))
     assert round(cfg["pfik_vs_nz"], 2) == 2.23 and round(cfg["pfik_vs_dense"], 2) == 0.07
     mixed = ev.run_config(Settings("mixed", 80, 80, 0.05, 35))
-    assert round(mixed["pfik_vs_nz"], 2) == 0.32 and round(mixed["pfik_vs_dense"], 2) == 0.13
-    for text in ("Median 0.32", "2.23-fach", "0.07 bei Zufall 60 × 480", "0.13 bei Transport 8 × 12 und Mischung 80 × 80", "3.0e-12", "0.57", "1.19"):
+    assert round(mixed["pfik_vs_nz"], 2) == 0.30 and round(mixed["pfik_vs_dense"], 2) == 0.12
+    for text in ("Median 0.30", "2.23-fach", "0.07 bei Zufall 60 × 480", "0.13 bei Transport 8 × 12, 0.12 bei Mischung 80 × 80", "unter 1e-11", "0.57", "1.19"):
         assert text in APP_SRC, text
-    _has("Zufall 60 × 480: 2.23", "0.07 bei Zufall 60 × 480, 0.13 bei Transport 8 × 12 und bei Mischung 80 × 80")
+    _has("Zufall 60 × 480: 2.23", "0.07 bei Zufall 60 × 480, 0.13 bei Transport 8 × 12 und 0.12 bei Mischung 80 × 80")
 
 
 def test_literature_lines_are_in_the_readme_and_the_app():

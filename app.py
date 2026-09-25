@@ -304,10 +304,10 @@ st.markdown(
     """
 | Annahme | Was passiert, wenn sie verletzt ist | Wer setzt an |
 |---|---|---|
-| **Revised Simplex ist billiger als das Tableau.** | Nur gegen das dichte Modell der Stücke 1-3 (Produktform mit Neuinversion: 0.07 bei Zufall 60 × 480, 0.13 bei Transport 8 × 12 und Mischung 80 × 80). Zählt man auch das Tableau nur auf Nichtnullen, gewinnt der Revised Simplex bei langen Läufen (Mischinstanz 80 × 80: Median 0.32) und verliert bei kurzen (Zufall 60 × 480, 8 Pivots: 2.23-fach). | Sparse-Tableau-Varianten, echte Löser |
+| **Revised Simplex ist billiger als das Tableau.** | Nur gegen das dichte Modell der Stücke 1-3 (Produktform mit Neuinversion: 0.07 bei Zufall 60 × 480, 0.13 bei Transport 8 × 12, 0.12 bei Mischung 80 × 80). Zählt man auch das Tableau nur auf Nichtnullen, gewinnt der Revised Simplex bei langen Läufen (Mischinstanz 80 × 80: Median 0.30) und verliert bei kurzen (Zufall 60 × 480, 8 Pivots: 2.23-fach). | Sparse-Tableau-Varianten, echte Löser |
 | **Er spart Pivots.** | Nein: der Pfad ist derselbe. Er ändert nur die Kosten je Pivot. Nur die partielle Preisgebung ändert den Pfad. | Pivotregeln (Stück 2) |
 | **Die explizite Inverse ist der Revised Simplex.** | Sie kostet m² je Update und verliert auf dichten und kurzen Läufen deutlich (Zufall 20 × 20: 1.47-fach des dichten Tableaus); die Produktform mit Neuinversion ist fast überall besser. | Sparse LU, Forrest-Tomlin |
-| **Neuinversion schützt vor Rundungsfehlern.** | Auf diesen Größen ist der Fehler winzig (3.0e-12 ohne Neuinversion bei Mischung 60 × 60, Seed 35); sie lohnt wegen der wachsenden Eta-Datei. | Numerik-Stück (Präsolve, Skalierung) |
+| **Neuinversion schützt vor Rundungsfehlern.** | Auf diesen Größen ist der Fehler winzig (unter 1e-11 auch ohne Neuinversion bei Mischung 60 × 60); sie lohnt wegen der wachsenden Eta-Datei. | Numerik-Stück (Präsolve, Skalierung) |
 | **Steepest Edge lohnt immer.** | Im Revised Simplex verursachen die Gewichte eine zusätzliche Preisgebung: bei Transport 6 × 10 sinken die Pivots auf 0.57, die Operationen steigen auf 1.19. | Devex, Referenzrahmen |
 | **Das Zählmodell ist die Laufzeit.** | Es ist ein Näherungsmaß auf Nichtnullen; Cache, Speicherzugriffe und Sparse-Datenstrukturen fehlen. Echte Löser (Markowitz-LU, Forrest-Tomlin, Bound Flipping, Hypersparsity) sind nicht gebaut. | Echte Löser |
 """

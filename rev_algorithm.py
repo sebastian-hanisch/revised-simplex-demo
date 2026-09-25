@@ -331,6 +331,16 @@ def tableau_simplex(inst, rule="dantzig", seed="0", max_pivots=MAX_PIVOTS, trace
 # --- Darstellungen der Basis-Inverse ----------------------------------------------------------------------------------------------------------------
 
 
+CLEAN = 1e-12                               # Beträge darunter gelten als Rundungsrauschen (null): macht die gezählten Nichtnullen plattformunabhängig
+
+
+def _clean(v):
+    """Setzt Rundungsrauschen (|v| <= 1e-12) auf null, damit die Zählung der Nichtnullen nicht von der BLAS-Bibliothek der Plattform abhängt."""
+    v = np.asarray(v, dtype=float).copy()
+    v[np.abs(v) <= CLEAN] = 0.0
+    return v
+
+
 class ExplicitInverse:
     """Dichtes B^-1 (m x m), Rang-1-Update auf den Zeilen mit d_i != 0. Kosten: FTRAN/BTRAN 2 m je Nichtnull des Vektors, Update m + 2 m je Nichtnull von d (ohne die Pivotzeile)."""
     kind = "explicit"
@@ -342,11 +352,11 @@ class ExplicitInverse:
 
     def ftran(self, v, key="ftran"):
         self.ops[key] += 2 * self.m * int(np.count_nonzero(v))
-        return self.Binv @ v
+        return _clean(self.Binv @ v)
 
     def btran(self, u, key="btran"):
         self.ops[key] += 2 * self.m * int(np.count_nonzero(u))
-        return u @ self.Binv
+        return _clean(u @ self.Binv)
 
     def update(self, p, d):
         nz = int(np.count_nonzero(d))
@@ -379,22 +389,22 @@ class ProductForm:
         x = v.astype(float).copy()
         for p, eta, nnz in self.etas:
             xp = x[p]
-            if xp != 0.0:
+            if abs(xp) > CLEAN:
                 x += xp * eta
                 x[p] = xp * eta[p]
                 self.ops[key] += 2 * (nnz - 1) + 1
-        return x
+        return _clean(x)
 
     def btran(self, u, key="btran"):
         x = u.astype(float).copy()
         for p, eta, _nnz in reversed(self.etas):
-            pairs = int(np.count_nonzero((x != 0.0) & (eta != 0.0)))
+            pairs = int(np.count_nonzero((np.abs(x) > CLEAN) & (eta != 0.0)))
             self.ops[key] += 2 * pairs
             x[p] = float(x @ eta)
-        return x
+        return _clean(x)
 
     def _push(self, p, d, key):
-        eta = -d / d[p]
+        eta = _clean(-d / d[p])
         eta[p] = 1.0 / d[p]
         nnz = int(np.count_nonzero(eta))
         self.ops[key] += nnz

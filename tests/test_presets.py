@@ -56,19 +56,19 @@ def test_help_textbook_and_transport():
 
 def test_help_long_and_short_runs():
     r = _rows("Lange Läufe: Revised gewinnt")
-    assert r["tableau"]["pivots"] == 235 and (r["tableau"]["ops"], r["tableau_nz"]["ops"], r["pfik"]["ops"]) == (7377825, 2900025, 827497)
-    assert r["pfik"]["ops"] / r["tableau_nz"]["ops"] == pytest.approx(0.29, abs=0.005)
+    assert r["tableau"]["pivots"] == 235 and (r["tableau"]["ops"], r["tableau_nz"]["ops"], r["pfik"]["ops"]) == (7377825, 2900025, 752090)
+    assert r["pfik"]["ops"] / r["tableau_nz"]["ops"] == pytest.approx(0.26, abs=0.005)
     cfg = ev.run_config(_settings("Lange Läufe: Revised gewinnt"))
-    assert cfg["pfik_vs_nz"] == pytest.approx(0.32, abs=0.005) and cfg["explicit_vs_nz"] == pytest.approx(1.48, abs=0.005)
-    _has("Lange Läufe: Revised gewinnt", "80 Ressourcen und 80 Diensten", "235 Pivots", "7 377 825", "2 900 025", "827 497", "(0.29)", "0.32", "1.48")
+    assert cfg["pfik_vs_nz"] == pytest.approx(0.30, abs=0.005) and cfg["explicit_vs_nz"] == pytest.approx(1.33, abs=0.005)
+    _has("Lange Läufe: Revised gewinnt", "80 Ressourcen und 80 Diensten", "235 Pivots", "7 377 825", "2 900 025", "752 090", "(0.26)", "0.30", "1.33")
     r = _rows("Kurzer Lauf: Tableau gewinnt")
-    assert r["tableau"]["pivots"] == 6 and (r["tableau"]["ops"], r["tableau_nz"]["ops"], r["pfik"]["ops"]) == (392766, 7075, 28791)
+    assert r["tableau"]["pivots"] == 6 and (r["tableau"]["ops"], r["tableau_nz"]["ops"], r["pfik"]["ops"]) == (392766, 7075, 28788)
     assert r["pfik"]["ops"] / r["tableau_nz"]["ops"] == pytest.approx(4.07, abs=0.005) and r["pfik"]["ops"] / r["tableau"]["ops"] == pytest.approx(0.07, abs=0.005)
     cfg = ev.run_config(_settings("Kurzer Lauf: Tableau gewinnt"))
     assert cfg["pfik_vs_nz"] == pytest.approx(2.23, abs=0.005)
     a = ev.analyse(_settings("Kurzer Lauf: Tableau gewinnt")).rev
     assert a.ops["price"] / a.total_ops > 0.99
-    _has("Kurzer Lauf: Tableau gewinnt", "60 Ressourcen und 480 Diensten", "nur 6 Pivots", "7 075", "28 791", "4.1-fach", "2.23", "392 766", "0.07")
+    _has("Kurzer Lauf: Tableau gewinnt", "60 Ressourcen und 480 Diensten", "nur 6 Pivots", "7 075", "28 788", "4.1-fach", "2.23", "392 766", "0.07")
 
 
 def test_help_explicit_inverse_and_fill_in():
@@ -77,21 +77,21 @@ def test_help_explicit_inverse_and_fill_in():
     assert r["explicit"]["ops"] / r["tableau"]["ops"] == pytest.approx(1.53, abs=0.005) and r["explicit"]["ops"] / r["tableau_nz"]["ops"] == pytest.approx(2.86, abs=0.005)
     _has("Explizite Inverse verliert", "20 Ressourcen und 20 Diensten", "8 Pivots", "20 603", "13 448", "1.53-fach", "7 216", "2.86-fach", "8 323")
     r = _rows("Fill-in des Tableaus")
-    assert r["tableau"]["pivots"] == 425 and (r["tableau"]["stored"], r["tableau_nz"]["stored"], r["pfik"]["stored"]) == (23937, 13537, 5324)
-    assert (r["tableau_nz"]["ops"], r["pfik"]["ops"]) == (9363559, 4844404) and r["pfik"]["ops"] / r["tableau_nz"]["ops"] == pytest.approx(0.52, abs=0.005)
-    assert ev.run_config(_settings("Fill-in des Tableaus"))["pfik_vs_nz"] == pytest.approx(0.47, abs=0.005)
-    _has("Fill-in des Tableaus", "425 Pivots", "13 537", "23 937", "5 324", "9 363 559", "4 844 404", "0.52", "0.47")
+    assert r["tableau"]["pivots"] == 425 and (r["tableau"]["stored"], r["tableau_nz"]["stored"], r["pfik"]["stored"]) == (23937, 13537, 5042)
+    assert (r["tableau_nz"]["ops"], r["pfik"]["ops"]) == (9363559, 4504324) and r["pfik"]["ops"] / r["tableau_nz"]["ops"] == pytest.approx(0.48, abs=0.005)
+    assert ev.run_config(_settings("Fill-in des Tableaus"))["pfik_vs_nz"] == pytest.approx(0.45, abs=0.005)
+    _has("Fill-in des Tableaus", "425 Pivots", "13 537", "23 937", "5 042", "9 363 559", "4 504 324", "0.48", "0.45")
 
 
 def test_help_refactor_curve_and_drift():
     rows = {int(r["K"]): r for r in ev.refactor_curve(_settings("Neuinversion: U-Kurve"))}
-    assert [round(rows[K]["ops"]) for K in (0, 1, 2, 5, 10, 20, 50)] == [3618469, 3156874, 1905893, 1174015, 980375, 983608, 1263998] and min(rows, key=lambda K: rows[K]["ops"]) == 10
+    assert [round(rows[K]["ops"]) for K in (0, 1, 2, 5, 10, 20, 50)] == [2984287, 3116851, 1882352, 1137921, 953297, 955386, 1208814] and min(rows, key=lambda K: rows[K]["ops"]) == 10
     _has("Neuinversion: U-Kurve", "60 Ressourcen und 60 Diensten", *[th(rows[K]["ops"]) for K in (0, 1, 2, 5, 10, 20, 50)], "(Minimum)")
     s = _settings("Drift bleibt klein")
     d = ev.drift_series(s)
     assert len(d["pfi"]) == 162 and s.refactor == 0 and s.k_eff == 10
-    assert (f"{max(d['explicit']):.1e}", f"{max(d['pfi']):.1e}", f"{max(d['pfik']):.1e}") == ("1.4e-12", "3.0e-12", "1.4e-13")
-    _has("Drift bleibt klein", "162 Pivots", "1.4e-12", "3.0e-12", "1.4e-13")
+    assert max(d["explicit"]) < 1e-11 and max(d["pfi"]) < 1e-11 and max(d["pfik"]) < 0.5 * max(max(d["explicit"]), max(d["pfi"]))
+    _has("Drift bleibt klein", "162 Pivots", "1e-12", "unter 1e-11", "eine Größenordnung darunter")
 
 
 def test_help_steepest_and_partial():
@@ -102,7 +102,7 @@ def test_help_steepest_and_partial():
     _has("Steepest Edge im Revised", "6 Lagern und 10 Kunden", "31 statt 54", "0.57", "0.55", "1.19", "31 336", "26 328", "17 726")
     s = _settings("Partielle Preisgebung")
     a = ev.analyse(s)
-    assert (a.rev.total_pivots, a.tab.total_pivots) == (78, 59) and a.rev.total_ops == 45865 and ev.methods(s)["pfik"].total_ops == 81951
+    assert (a.rev.total_pivots, a.tab.total_pivots) == (78, 59) and a.rev.total_ops == 43340 and ev.methods(s)["pfik"].total_ops == 80158
     rows = {r["fraction"]: r for r in ev.partial_curve(s)}
-    assert [round(rows[f]["total"]) for f in C.PARTIAL_OPTIONS] == [57000, 43151, 44912, 18701, 26120]
-    _has("Partielle Preisgebung", "20 Ressourcen und 160 Diensten", "0.125", "78 statt 59 Pivots", "45 865", "81 951", "57 000, 43 151, 44 912, 18 701, 26 120")
+    assert [round(rows[f]["total"]) for f in C.PARTIAL_OPTIONS] == [55433, 42124, 43462, 18262, 24583]
+    _has("Partielle Preisgebung", "20 Ressourcen und 160 Diensten", "0.125", "78 statt 59 Pivots", "43 340", "80 158", "55 433, 42 124, 43 462, 18 262, 24 583")
