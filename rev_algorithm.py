@@ -19,6 +19,7 @@ MAX_PIVOTS = 20_000
 RULES_TABLEAU = ("dantzig", "greatest", "steepest", "bland", "random")
 RULES = ("dantzig", "steepest", "bland", "random")
 BASES = ("explicit", "pfi")
+CLEAN = 1e-12                               # Beträge darunter gelten als Rundungsrauschen (null): macht die gezählten Nichtnullen plattformunabhängig
 OP_KEYS = ("btran", "price", "ftran", "ratio", "update", "refactor", "weights")
 
 
@@ -176,8 +177,8 @@ def _pivot_flops(m, ncols):
 
 def _pivot_flops_nz(T, row, col):
     """Tableau-Pivot nur auf Nichtnullen: Division der Pivotzeile (Nichtnullen) plus 2 je Nichtnull der Pivotzeile für jede andere Zeile (auch die Zielzeile) mit Faktor != 0."""
-    nz_row = int(np.count_nonzero(T[row]))
-    nz_factors = int(np.count_nonzero(T[:, col])) - (1 if T[row, col] != 0 else 0)
+    nz_row = _count_nz(T[row])
+    nz_factors = _count_nz(T[:, col]) - (1 if abs(T[row, col]) > CLEAN else 0)
     return nz_row + 2 * nz_row * nz_factors
 
 
@@ -211,12 +212,12 @@ def tableau_simplex(inst, rule="dantzig", seed="0", max_pivots=MAX_PIVOTS, trace
             return cand[rng.randrange(len(cand))]
         if rule == "steepest":
             res.price_flops += (2 * m + 2) * len(cand)
-            res.price_nz += sum(2 * int(np.count_nonzero(T[:m, j])) + 2 for j in cand)
+            res.price_nz += sum(2 * _count_nz(T[:m, j]) + 2 for j in cand)
             val = {j: r[j] / (1.0 + float(np.dot(T[:m, j], T[:m, j]))) ** 0.5 for j in cand}
             return _pick_min(cand, val)
         best, best_gain = None, -1.0
         res.price_flops += 2 * m * len(cand)
-        res.price_nz += sum(2 * int(np.count_nonzero(T[:m, j])) for j in cand)
+        res.price_nz += sum(2 * _count_nz(T[:m, j]) for j in cand)
         for j in cand:
             col = T[:m, j]
             pos = [i for i in range(m) if col[i] > TOL]
@@ -268,7 +269,7 @@ def tableau_simplex(inst, rule="dantzig", seed="0", max_pivots=MAX_PIVOTS, trace
                 zero_run = 0
             art_sum = float(sum(xf[j] for j in art)) if art else 0.0
             piv = Pivot(len(res.pivots) + 1, phase, enter, leave, leave_var, float(step), len(tied), float(T[m, -1]), degenerate, tuple(basis), tuple(float(v) for v in xf[:n]), art_sum <= 1e-7,
-                        sum(1 for j in basis if xf[j] <= TOL), ops=nzc, nnz=int(np.count_nonzero(T)))
+                        sum(1 for j in basis if xf[j] <= TOL), ops=nzc, nnz=_count_nz(T))
             res.pivots.append(piv)
             key = frozenset(basis)
             if key in seen:
@@ -310,7 +311,7 @@ def tableau_simplex(inst, rule="dantzig", seed="0", max_pivots=MAX_PIVOTS, trace
                 basis[i] = enter
                 xf = x_of_basis()
                 res.pivots.append(Pivot(len(res.pivots) + 1, 1, enter, i, a, 0.0, 1, float(T[m, -1]), True, tuple(basis), tuple(float(v) for v in xf[:n]), True,
-                                        sum(1 for j in basis if xf[j] <= TOL), ops=nzc, nnz=int(np.count_nonzero(T))))
+                                        sum(1 for j in basis if xf[j] <= TOL), ops=nzc, nnz=_count_nz(T)))
             else:
                 res.redundant_rows += 1
         res.phase1_pivots = len(res.pivots)
@@ -331,7 +332,9 @@ def tableau_simplex(inst, rule="dantzig", seed="0", max_pivots=MAX_PIVOTS, trace
 # --- Darstellungen der Basis-Inverse ----------------------------------------------------------------------------------------------------------------
 
 
-CLEAN = 1e-12                               # Beträge darunter gelten als Rundungsrauschen (null): macht die gezählten Nichtnullen plattformunabhängig
+def _count_nz(v):
+    """Zahl der Nichtnullen mit derselben Rauschgrenze wie `_clean` (|v| <= 1e-12 gilt als null): Rundungsreste einer Auslöschung im Tableau zählen nicht als Eintrag."""
+    return int(np.count_nonzero(np.abs(v) > CLEAN))
 
 
 def _clean(v):

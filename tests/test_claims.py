@@ -45,15 +45,15 @@ def test_transport_crossover_series():
 
 def test_mixed_crossover_series_and_the_density_flip():
     rows = ev.crossover(Settings("mixed", 20, 20, 0.05, 35), "size")
-    assert _ratios(rows) == [2.54, 4.72, 4.30, 1.54, 0.30, 0.45] and [int(r["pivots"]) for r in rows] == [7, 12, 38, 49, 223, 364]
-    assert round(rows[-1]["explicit"] / rows[-1]["nz"], 2) == 1.41 and round(rows[2]["explicit"] / rows[2]["nz"], 1) == 22.8
-    _has("**2.54 / 4.72 / 4.30 / 1.54 / 0.30 / 0.45**", "(7, 12, 38, 49, 223, 364 Pivots)", "Mischung 100 × 100: 1.41-fach", "bis 23-fach", "Mischung 20 × 20: 4.72")
+    assert _ratios(rows) == [2.54, 4.72, 5.19, 3.33, 0.41, 0.52] and [int(r["pivots"]) for r in rows] == [7, 12, 38, 49, 223, 364]
+    assert round(rows[-1]["explicit"] / rows[-1]["nz"], 2) == 1.61 and round(rows[2]["explicit"] / rows[2]["nz"], 1) == 27.5
+    _has("**2.54 / 4.72 / 5.19 / 3.33 / 0.41 / 0.52**", "(7, 12, 38, 49, 223, 364 Pivots)", "Mischung 100 × 100: 1.61-fach", "bis 27-fach", "Mischung 20 × 20: 4.72")
     flip = ev.crossover(Settings("mixed", 20, 20, 0.1, 35), "size")
-    assert _ratios(flip)[-1] == 1.38
-    _has("(1.38)", "0.45 bei Dichte 0.05, 1.38 bei Dichte 0.1")
+    assert _ratios(flip)[-1] == 1.39
+    _has("(1.39)", "0.52 bei Dichte 0.05, 1.39 bei Dichte 0.1")
     dens = ev.crossover(Settings("mixed", 30, 120, 0.05, 35), "density")
-    assert round(next(r for r in dens if r["label"] == "0.1")["explicit"] / next(r for r in dens if r["label"] == "0.1")["nz"], 2) == 0.62
-    _has("Mischung 30 × 120, Dichte 0.1: 0.62")
+    assert round(next(r for r in dens if r["label"] == "0.2")["explicit"] / next(r for r in dens if r["label"] == "0.2")["nz"], 2) == 0.69
+    _has("Mischung 30 × 120, Dichte 0.2: 0.69")
 
 
 def test_explicit_against_dense_on_a_dense_instance():
@@ -82,8 +82,8 @@ def test_refactor_and_drift_numbers():
 
 def test_fill_in_and_storage_numbers():
     rows = {r["name"]: r for r in ev.method_rows(Settings("mixed", 100, 100, 0.05, 35, "dantzig", "pfi", 10))}
-    assert (rows["tableau"]["stored"], rows["tableau_nz"]["stored"], rows["pfik"]["stored"]) == (23937, 13537, 5042)
-    _has("**13 537** Nichtnullen (dicht gespeichert 23 937)", "**5 042**")
+    assert (rows["tableau"]["stored"], rows["tableau_nz"]["stored"], rows["pfik"]["stored"]) == (23937, 13149, 5042)
+    _has("**13 149** Nichtnullen (dicht gespeichert 23 937)", "**5 042**")
 
 
 def test_steepest_numbers_and_the_mixed_counter_example():
@@ -102,12 +102,12 @@ def test_partial_pricing_numbers_and_the_grenzen_table():
     assert [round(r["total"]) for r in rows.values()] == [55433, 42124, 43462, 18262, 24583] and [int(r["pivots"]) for r in rows.values()] == [40, 45, 63, 45, 58]
     _has("**55 433 / 42 124 / 43 462 / 18 262 / 24 583**", "40 / 45 / 63 / 45 / 58 Pivots", "18 262 statt 55 433")
     cfg = ev.run_config(Settings("random", 60, 480, 0.05, 35))
-    assert round(cfg["pfik_vs_nz"], 2) == 2.23 and round(cfg["pfik_vs_dense"], 2) == 0.07
+    assert round(cfg["pfik_vs_nz"], 2) == 2.52 and round(cfg["pfik_vs_dense"], 2) == 0.07
     mixed = ev.run_config(Settings("mixed", 80, 80, 0.05, 35))
-    assert round(mixed["pfik_vs_nz"], 2) == 0.30 and round(mixed["pfik_vs_dense"], 2) == 0.12
-    for text in ("Median 0.30", "2.23-fach", "0.07 bei Zufall 60 × 480", "0.13 bei Transport 8 × 12, 0.12 bei Mischung 80 × 80", "unter 1e-11", "0.57", "1.19"):
+    assert round(mixed["pfik_vs_nz"], 2) == 0.42 and round(mixed["pfik_vs_dense"], 2) == 0.12
+    for text in ("Median 0.42", "2.52-fach", "0.07 bei Zufall 60 × 480", "0.13 bei Transport 8 × 12, 0.12 bei Mischung 80 × 80", "unter 1e-11", "0.57", "1.19"):
         assert text in APP_SRC, text
-    _has("Zufall 60 × 480: 2.23", "0.07 bei Zufall 60 × 480, 0.13 bei Transport 8 × 12 und 0.12 bei Mischung 80 × 80")
+    _has("Zufall 60 × 480: 2.52", "0.07 bei Zufall 60 × 480, 0.13 bei Transport 8 × 12 und 0.12 bei Mischung 80 × 80")
 
 
 def test_literature_lines_are_in_the_readme_and_the_app():

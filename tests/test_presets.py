@@ -56,19 +56,19 @@ def test_help_textbook_and_transport():
 
 def test_help_long_and_short_runs():
     r = _rows("Lange Läufe: Revised gewinnt")
-    assert r["tableau"]["pivots"] == 235 and (r["tableau"]["ops"], r["tableau_nz"]["ops"], r["pfik"]["ops"]) == (7377825, 2900025, 752090)
-    assert r["pfik"]["ops"] / r["tableau_nz"]["ops"] == pytest.approx(0.26, abs=0.005)
+    assert r["tableau"]["pivots"] == 235 and (r["tableau"]["ops"], r["tableau_nz"]["ops"], r["pfik"]["ops"]) == (7377825, 1788804, 752090)
+    assert r["pfik"]["ops"] / r["tableau_nz"]["ops"] == pytest.approx(0.42, abs=0.005)
     cfg = ev.run_config(_settings("Lange Läufe: Revised gewinnt"))
-    assert cfg["pfik_vs_nz"] == pytest.approx(0.30, abs=0.005) and cfg["explicit_vs_nz"] == pytest.approx(1.33, abs=0.005)
-    _has("Lange Läufe: Revised gewinnt", "80 Ressourcen und 80 Diensten", "235 Pivots", "7 377 825", "2 900 025", "752 090", "(0.26)", "0.30", "1.33")
+    assert cfg["pfik_vs_nz"] == pytest.approx(0.42, abs=0.005) and cfg["explicit_vs_nz"] == pytest.approx(1.88, abs=0.005)
+    _has("Lange Läufe: Revised gewinnt", "80 Ressourcen und 80 Diensten", "235 Pivots", "7 377 825", "1 788 804", "752 090", "(0.42)", "1.88")
     r = _rows("Kurzer Lauf: Tableau gewinnt")
-    assert r["tableau"]["pivots"] == 6 and (r["tableau"]["ops"], r["tableau_nz"]["ops"], r["pfik"]["ops"]) == (392766, 7075, 28788)
-    assert r["pfik"]["ops"] / r["tableau_nz"]["ops"] == pytest.approx(4.07, abs=0.005) and r["pfik"]["ops"] / r["tableau"]["ops"] == pytest.approx(0.07, abs=0.005)
+    assert r["tableau"]["pivots"] == 6 and (r["tableau"]["ops"], r["tableau_nz"]["ops"], r["pfik"]["ops"]) == (392766, 7013, 28788)
+    assert r["pfik"]["ops"] / r["tableau_nz"]["ops"] == pytest.approx(4.10, abs=0.005) and r["pfik"]["ops"] / r["tableau"]["ops"] == pytest.approx(0.07, abs=0.005)
     cfg = ev.run_config(_settings("Kurzer Lauf: Tableau gewinnt"))
-    assert cfg["pfik_vs_nz"] == pytest.approx(2.23, abs=0.005)
+    assert cfg["pfik_vs_nz"] == pytest.approx(2.52, abs=0.005)
     a = ev.analyse(_settings("Kurzer Lauf: Tableau gewinnt")).rev
     assert a.ops["price"] / a.total_ops > 0.99
-    _has("Kurzer Lauf: Tableau gewinnt", "60 Ressourcen und 480 Diensten", "nur 6 Pivots", "7 075", "28 788", "4.1-fach", "2.23", "392 766", "0.07")
+    _has("Kurzer Lauf: Tableau gewinnt", "60 Ressourcen und 480 Diensten", "nur 6 Pivots", "7 013", "28 788", "4.1-fach", "2.52", "392 766", "0.07")
 
 
 def test_help_explicit_inverse_and_fill_in():
@@ -77,10 +77,10 @@ def test_help_explicit_inverse_and_fill_in():
     assert r["explicit"]["ops"] / r["tableau"]["ops"] == pytest.approx(1.53, abs=0.005) and r["explicit"]["ops"] / r["tableau_nz"]["ops"] == pytest.approx(2.86, abs=0.005)
     _has("Explizite Inverse verliert", "20 Ressourcen und 20 Diensten", "8 Pivots", "20 603", "13 448", "1.53-fach", "7 216", "2.86-fach", "8 323")
     r = _rows("Fill-in des Tableaus")
-    assert r["tableau"]["pivots"] == 425 and (r["tableau"]["stored"], r["tableau_nz"]["stored"], r["pfik"]["stored"]) == (23937, 13537, 5042)
-    assert (r["tableau_nz"]["ops"], r["pfik"]["ops"]) == (9363559, 4504324) and r["pfik"]["ops"] / r["tableau_nz"]["ops"] == pytest.approx(0.48, abs=0.005)
-    assert ev.run_config(_settings("Fill-in des Tableaus"))["pfik_vs_nz"] == pytest.approx(0.45, abs=0.005)
-    _has("Fill-in des Tableaus", "425 Pivots", "13 537", "23 937", "5 042", "9 363 559", "4 504 324", "0.48", "0.45")
+    assert r["tableau"]["pivots"] == 425 and (r["tableau"]["stored"], r["tableau_nz"]["stored"], r["pfik"]["stored"]) == (23937, 13149, 5042)
+    assert (r["tableau_nz"]["ops"], r["pfik"]["ops"]) == (8209467, 4504324) and r["pfik"]["ops"] / r["tableau_nz"]["ops"] == pytest.approx(0.55, abs=0.005)
+    assert ev.run_config(_settings("Fill-in des Tableaus"))["pfik_vs_nz"] == pytest.approx(0.52, abs=0.005)
+    _has("Fill-in des Tableaus", "425 Pivots", "13 149", "23 937", "5 042", "8 209 467", "4 504 324", "0.55", "0.52")
 
 
 def test_help_refactor_curve_and_drift():
