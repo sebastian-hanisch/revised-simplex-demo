@@ -58,7 +58,7 @@ Der **Pivotpfad ist derselbe**, nur die Rechnung ist eine andere. Vier Fragen, a
 **(3) Neuinversion** - explizite Inverse gegen Produktform, und wann lohnt eine neue Faktorisierung? **(4) Wann lohnt es** - Kreuzungspunkte, Steepest Edge und partielle Preisgebung.
 """
 )
-st.caption("Kind von [Tableau-Simplex](https://github.com/sebastian-hanisch/tableau-simplex-demo). Folgestücke (Dualität, Dualer Simplex, Innere Punkte, PDLP) sind [noch nicht gebaut].")
+st.caption("Kind von [Tableau-Simplex](https://github.com/sebastian-hanisch/tableau-simplex-demo). Folgestücke (Dualität, Dualer Simplex, Innere Punkte, PDLP) sind inzwischen gebaut.")
 
 with st.expander("So funktioniert der Revised Simplex", expanded=True):
     st.markdown(
@@ -338,6 +338,6 @@ Implementiert in `rev_algorithm.py` (Tableau, explizite Inverse, Produktform, Re
 st.markdown("---")
 st.caption(
     "Diese Demo ist Teil des Portfolios von [Sebastian Hanisch](https://sebastianhanisch.net) – "
-    "Operations Research und Machine Learning. Interesse an einer maßgeschneiderten Lösung für "
-    "Ihr Unternehmen? [Kontakt aufnehmen](https://sebastianhanisch.net/kontakt.html)"
+    "Operations Research und Machine Learning ([Über mich](https://sebastianhanisch.net/ueber-mich.html)). "
+    "Mehr zur Reihe: [Lineare Programmierung: vom Tableau zum Crossover](https://sebastianhanisch.net/konzepte-lineare-programmierung.html)."
 )

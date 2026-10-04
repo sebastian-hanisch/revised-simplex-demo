@@ -95,4 +95,4 @@ Tests: `pip install -r requirements-dev.txt` und `python -m pytest tests/ -W err
 - Forrest, J. J. H., & Tomlin, J. A. (1972). *Updated triangular factors of the basis to maintain sparsity in the product form simplex method.* Mathematical Programming 2, 263–278 (nur genannt).
 - Forrest, J. J., & Goldfarb, D. (1992). *Steepest-edge simplex algorithms for linear programming.* Mathematical Programming 57, 341–374.
 
-Diese Demo ist Teil des Portfolios von [Sebastian Hanisch](https://sebastianhanisch.net) – Operations Research und Machine Learning.
+Diese Demo ist Teil des Portfolios von [Sebastian Hanisch](https://sebastianhanisch.net) – Operations Research und Machine Learning ([Über mich](https://sebastianhanisch.net/ueber-mich.html)). Mehr zur Reihe: [Lineare Programmierung: vom Tableau zum Crossover](https://sebastianhanisch.net/konzepte-lineare-programmierung.html).
